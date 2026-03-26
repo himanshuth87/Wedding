@@ -12,7 +12,9 @@ import confetti from 'canvas-confetti';
 import logoImg from './assets/logo.png';
 import templeImg from './assets/temple.jpg';
 import goldFoilImg from './assets/gold_foil.png';
-import doorsImg from './assets/palace_doors.png';
+import doorsImg from './assets/ceremony_doors.png';
+import ganpatiImg from './assets/ganpati.png';
+import scrollImg from './assets/scroll.png';
 
 // --- Constants & Data ---
 
@@ -20,27 +22,25 @@ const WEDDING_DATE = new Date('2026-06-27T12:30:00');
 
 const EVENTS = [
   {
-    day: 'Day 1',
-    date: 'Friday · 26th June 2026',
+    day: 'Day 1 | 26th June',
     items: [
-      { time: '1:00 PM', name: 'साखरपुडा & Ring Ceremony 💍', desc: 'Attire: Ivory & Gold Ethnic Wear' },
-      { time: '1:00 PM', name: 'Lunch 🍽️', desc: '1st Floor Dining Hall · Onwards' },
-      { time: '3:00 PM', name: 'सीमंत पूजन (Meet & Greet) 🌸', desc: 'Welcoming the guests' },
-      { time: '7:00 PM', name: 'Sangeet Night & DJ Night ✨', desc: 'Attire: Indowestern Glamour' },
-      { time: '10:00 PM', name: 'Dinner 🍛', desc: '1st Floor Dining Hall · Onwards' },
+      { id: 1, time: '1:00 PM', name: 'साखरपुडा & Ring Ceremony 💍', desc: 'Attire: Ivory & Gold Ethnic Wear' },
+      { id: 2, time: '1:00 PM', name: 'Lunch 🍽️', desc: '1st Floor Dining Hall · Onwards' },
+      { id: 3, time: '3:00 PM', name: 'सीमंत पूजन (Meet & Greet) 🌸', desc: 'Welcoming the guests' },
+      { id: 4, time: '7:00 PM', name: 'Sangeet & DJ Night ✨', desc: 'Attire: Indowestern Glamour' },
+      { id: 5, time: '10:00 PM', name: 'Dinner 🍛', desc: '1st Floor Dining Hall · Onwards' },
     ]
   },
   {
-    day: 'Day 2',
-    date: 'Saturday · 27th June 2026',
+    day: 'Day 2 | 27th June',
     items: [
-      { time: '6:00 AM', name: 'हळद 🌼', desc: 'Attire: Shades of Yellow' },
-      { time: '8:00 AM', name: 'सप्तपदी 🪷', desc: 'Sacred Rituals' },
-      { time: '11:00 AM', name: 'वरात 🎺', desc: 'Wedding Procession' },
-      { time: '12:30 PM', name: 'मंगलाष्टक (Shubh Muhurat) 💒', desc: 'Attire: Maharashtrian Ethnic Wear' },
-      { time: '1:00 PM', name: 'Lunch 🍽️', desc: '1st Floor Dining Hall · Onwards' },
-      { time: '2:30 PM', name: 'Clicks with the couple 📸', desc: 'Attire: Indowestern (Optional) · Until 3:30pm' },
-      { time: '4:00 PM', name: 'Rooms Checkout 🏢', desc: 'Departure with memories' },
+      { id: 1, time: '6:00 AM', name: 'हळद 🌼', desc: 'Attire: Shades of Yellow' },
+      { id: 2, time: '8:00 AM', name: 'सप्तपदी 🪷', desc: 'Sacred Rituals' },
+      { id: 3, time: '11:00 AM', name: 'वरात 🎺', desc: 'Wedding Procession' },
+      { id: 4, time: '12:30 PM', name: 'मंगलाष्टक (Shubh Muhurat) 💒', desc: 'Attire: Maharashtrian Ethnic Wear' },
+      { id: 5, time: '1:00 PM', name: 'Lunch 🍽️', desc: '1st Floor Dining Hall · Onwards' },
+      { id: 6, time: '2:30 PM', name: 'Clicks with the couple 📸', desc: 'Attire: Indowestern (Optional)' },
+      { id: 7, time: '4:00 PM', name: 'Rooms Checkout 🏢', desc: 'Departure with memories' },
     ]
   }
 ];
@@ -270,98 +270,63 @@ export default function App() {
         {!showContent && (
           <motion.div
             id="doorPage"
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center cursor-pointer overflow-hidden bg-primary"
+            exit={{ scale: 1.1, opacity: 0 }}
+            transition={{ duration: 1.5, ease: [0.4, 0, 0.2, 1] }}
+            className="fixed inset-0 z-50 flex cursor-pointer overflow-hidden bg-primary"
             onClick={handleOpen}
           >
-            {/* Premium Door Image Background */}
-            <div className="absolute inset-0 z-0">
-              <img src={doorsImg} alt="Palace Doors" className="w-full h-full object-cover opacity-60" />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-primary/80" />
-              <div className="absolute inset-0 bg-black/30" />
+            {/* Background revealed during opening */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-10 z-0 text-center bg-primary">
+               <motion.div
+                 initial={{ opacity: 0, scale: 0.8 }}
+                 animate={isOpened ? { opacity: 0.2, scale: 1 } : { opacity: 0 }}
+                 className="absolute inset-0 blur-xl"
+               >
+                 <img src={ganpatiImg} alt="" className="w-full h-full object-contain p-20" />
+               </motion.div>
+               <motion.div
+                 animate={{ opacity: [0.3, 0.7, 0.3] }}
+                 transition={{ duration: 2, repeat: Infinity }}
+                 className="relative z-10 text-gold-light font-devanagari text-2xl tracking-[10px]"
+               >
+                 ॥ श्री गणेशाय नमः ॥
+               </motion.div>
             </div>
 
-            <motion.p
-              animate={{ opacity: [0.7, 1, 0.7] }}
-              transition={{ duration: 2.5, repeat: Infinity }}
-              className="font-devanagari text-gold-light text-xl tracking-[6px] mb-8"
+            {/* Left Door */}
+            <motion.div 
+              animate={isOpened ? { x: '-100%' } : { x: 0 }}
+              transition={{ duration: 2, ease: "easeInOut" }}
+              className="w-1/2 h-full relative z-10 border-r border-gold/20"
             >
-              ॥ श्री गणेशाय नमः ॥
-            </motion.p>
-
-            <div className="relative w-[300px] h-[450px] royal-shadow">
-              {/* Door Glow */}
-              <div className={`absolute top-[80px] left-[20px] right-[20px] h-[345px] z-0 transition-all duration-1500 ${isOpened ? 'door-glow-lit opacity-100' : 'opacity-0'}`} />
-
-              {/* Arch */}
-              <div className="absolute top-0 left-0 right-0 h-[85px] bg-gradient-to-br from-secondary via-gold to-secondary rounded-t-[150px] flex flex-col items-center justify-center">
-                <span className="text-2xl mt-1">🕉️</span>
-              </div>
-
-              {/* Pillars */}
-              <div className="absolute top-[80px] left-0 w-5 h-[345px] bg-gradient-to-r from-secondary via-gold to-secondary" />
-              <div className="absolute top-[80px] right-0 w-5 h-[345px] bg-gradient-to-r from-secondary via-gold to-secondary" />
-
-              {/* Left Door */}
-              <motion.div
-                initial={false}
-                animate={{ rotateY: isOpened ? -125 : 0 }}
-                transition={{ duration: 1.8, ease: [0.4, 0, 0.2, 1] }}
-                className="absolute top-[80px] left-5 w-[130px] h-[345px] bg-gradient-to-b from-[#4A0000] via-primary to-[#2D0000] origin-left overflow-hidden z-10"
-              >
-                <div className="absolute inset-0 flex flex-col p-4 gap-6">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="flex-1 border border-gold/10 rounded-sm relative">
-                      <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                        <Heart className="w-10 h-10 text-gold" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* Right Door */}
-              <motion.div
-                initial={false}
-                animate={{ rotateY: isOpened ? 125 : 0 }}
-                transition={{ duration: 1.8, ease: [0.4, 0, 0.2, 1] }}
-                className="absolute top-[80px] right-5 w-[130px] h-[345px] bg-gradient-to-b from-[#4A0000] via-primary to-[#2D0000] origin-right overflow-hidden z-10"
-              >
-                <div className="absolute inset-0 flex flex-col p-4 gap-6">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="flex-1 border border-gold/10 rounded-sm relative">
-                      <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                        <Heart className="w-10 h-10 text-gold" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* Step */}
-              <div className="absolute -bottom-[25px] -left-[20px] -right-[20px] h-[25px] bg-gradient-to-r from-secondary via-gold-light to-secondary rounded-b-xl" />
-            </div>
-
-            <div className="mt-10 px-8 text-center max-w-sm">
-              <p className="font-devanagari text-gold-light/90 text-sm leading-relaxed">
-                वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ ।<br/>
-                निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥
-              </p>
-            </div>
-
-            <motion.p
-              animate={{ opacity: [0.4, 0.8, 0.4] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="mt-8 text-gold-light/40 font-cinzel text-xs tracking-[5px]"
+              <img src={doorsImg} alt="" className="w-full h-full object-cover object-left" />
+              <div className="absolute inset-0 bg-black/10" />
+            </motion.div>
+            
+            {/* Right Door */}
+            <motion.div 
+              animate={isOpened ? { x: '100%' } : { x: 0 }}
+              transition={{ duration: 2, ease: "easeInOut" }}
+              className="w-1/2 h-full relative z-10 border-l border-gold/20"
             >
-              ✦ Tap to Step Inside ✦
-            </motion.p>
+              <img src={doorsImg} alt="" className="w-full h-full object-cover object-right" />
+              <div className="absolute inset-0 bg-black/10" />
+            </motion.div>
+
+            <div className="absolute bottom-16 left-0 right-0 z-20 text-center">
+              <motion.p
+                animate={{ opacity: [0.3, 0.6, 0.3] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="text-gold-light text-xs tracking-[8px] uppercase font-cinzel"
+              >
+                Tap To Enter
+              </motion.p>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {!showContent && <div className="fixed inset-0 bg-background -z-10" />}
+      {!showContent && <div className="fixed inset-0 bg-primary -z-10" />}
 
       {showContent && (
         <motion.div
@@ -372,226 +337,193 @@ export default function App() {
         >
           <Petals />
 
-          {/* Floating Controls */}
-          <div className="fixed top-6 right-6 z-40 flex items-center gap-3">
-             <button
-              onClick={toggleMusic}
-              className="w-12 h-12 bg-white/40 backdrop-blur-md rounded-full flex items-center justify-center text-primary royal-shadow hover:bg-white/60 transition-all border-none"
-            >
-              <Music className={`w-5 h-5 ${isPlaying ? 'animate-pulse' : ''}`} />
-            </button>
-          </div>
-
-          {/* Hero Section */}
-          <section id="hero" className="min-h-screen flex flex-col items-center justify-center text-center p-8 relative overflow-hidden bg-background">
-            <div className="absolute top-0 left-0 right-0 h-56 pointer-events-none opacity-80">
-              <svg className="w-full h-full" viewBox="0 0 400 150" preserveAspectRatio="none">
-                <path d="M0,0 L400,0 L400,100 C350,120 300,80 250,100 C200,120 150,80 100,100 C50,120 0,80 0,100 Z" fill="#D4AF37" opacity="0.1" />
-              </svg>
-            </div>
-
+          {/* Section 1: Ganpati Shloka Card (Burgundy) */}
+          <section className="min-h-screen bg-primary flex flex-col items-center justify-center p-8 text-center relative overflow-hidden">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1 }}
-              className="relative z-10"
+              initial={{ y: 50, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              className="max-w-xl w-full"
             >
-              <p className="font-devanagari text-primary text-2xl font-semibold mb-6 tracking-widest opacity-80">सस्नेह आमंत्रण</p>
-
-              <div className="my-10 flex justify-center">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="relative w-64 h-64 flex items-center justify-center"
-                >
-                  <img src={logoImg} alt="Anuja & Aditya Monogram" className="w-full h-full object-contain drop-shadow-2xl" />
-                </motion.div>
+              <div className="inline-block border border-gold-light/40 px-8 py-3 mb-10 rounded-sm">
+                <p className="font-devanagari text-gold-light text-xl tracking-widest shloka-glow">॥ श्री गणेशाय नमः ॥</p>
+              </div>
+              
+              <div className="mb-12 flex justify-center">
+                <motion.img 
+                  initial={{ scale: 0.8 }}
+                  whileInView={{ scale: 1 }}
+                  src={ganpatiImg} 
+                  alt="Ganesha" 
+                  className="w-56 h-56 object-contain drop-shadow-[0_0_50px_rgba(212,175,55,0.4)]"
+                />
               </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-              >
-                <h1 className="font-devanagari text-5xl md:text-7xl text-primary font-bold mb-4 tracking-normal leading-tight">
-                  अनुजा आणि आदित्य
-                </h1>
-                <p className="font-devanagari text-secondary text-3xl mt-4 font-medium tracking-wide">शुभविवाह सोहळा</p>
-                <div className="mt-12 flex flex-col items-center">
-                   <div className="w-16 h-px bg-gold/30 mb-6" />
-                   <p className="font-cinzel text-primary text-xs tracking-[8px] opacity-60">SCROLL TO DISCOVER</p>
-                </div>
-              </motion.div>
+              <div className="space-y-6">
+                <h2 className="font-devanagari text-3xl text-gold-light leading-relaxed font-bold tracking-wide">
+                  वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ ।<br />
+                  निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥
+                </h2>
+                <div className="w-24 h-px bg-gold-light/20 mx-auto my-8" />
+                <p className="font-garamond text-gold-light/60 italic text-xl max-w-sm mx-auto leading-relaxed">
+                  O Lord, please make me free from obstacles in all my works at all times.
+                </p>
+              </div>
+            </motion.div>
+
+            <button
+              onClick={toggleMusic}
+              className="absolute bottom-10 right-10 z-[100] bg-gold-light/10 p-5 rounded-full text-gold-light backdrop-blur-md border border-gold-light/20 shadow-2xl hover:scale-110 transition-all"
+            >
+              {isPlaying ? <Music className="w-6 h-6 animate-pulse" /> : <Music className="w-6 h-6 opacity-40" />}
+            </button>
+          </section>
+
+          {/* Section 2: Affectionately Invited (Cream) */}
+          <section className="min-h-screen bg-background flex flex-col items-center justify-center p-8 text-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="max-w-xl w-full bg-white/40 ring-1 ring-gold/20 p-16 royal-shadow relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-24 h-24 border-t-2 border-l-2 border-gold/10" />
+              <div className="absolute bottom-0 right-0 w-24 h-24 border-b-2 border-r-2 border-gold/10" />
+
+              <p className="font-garamond text-2xl text-primary/60 italic mb-12">Affectionately invited</p>
+              
+              <div className="mb-14 flex justify-center">
+                <img src={logoImg} alt="Monogram" className="w-48 h-48 object-contain" />
+              </div>
+
+              <div className="space-y-4 mb-14">
+                <p className="font-cinzel text-xs text-primary/40 tracking-[10px] uppercase">#A_Squared_LoveStory</p>
+                <h1 className="font-devanagari text-6xl text-primary font-bold tracking-tight">अनुजा आणि आदित्य</h1>
+              </div>
+
+              <p className="font-garamond text-2xl text-secondary italic">Happy wedding ceremony</p>
             </motion.div>
           </section>
 
-          <section id="countdown" className="py-24 px-8 bg-primary text-center">
+          {/* Section 3: Save The Date (Gold Scratch Reveal) */}
+          <section className="py-32 px-8 bg-background flex flex-col items-center">
+             <div className="max-w-xl w-full">
+                <ScratchToReveal onReveal={() => {
+                  setIsRevealed(true);
+                  confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 }, colors: ['#D4AF37', '#610000', '#FDF8E1'] });
+                }}>
+                  <div className="p-16 text-center">
+                    <motion.div
+                      animate={isRevealed ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+                      className="space-y-4"
+                    >
+                      <p className="font-cinzel text-7xl text-primary font-bold tracking-tighter">27 JUNE 2026</p>
+                    </motion.div>
+                  </div>
+                </ScratchToReveal>
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  className="mt-20 text-center"
+                >
+                   <p className="font-devanagari text-primary/40 text-sm tracking-[5px] mb-8 uppercase">आम्हा उभयतांचे लग्न</p>
+                   <img src={templeImg} alt="Temple Sketch" className="w-full opacity-60 mix-blend-multiply" />
+                   
+                   <div className="mt-16">
+                     <Countdown isVisible={true} />
+                   </div>
+                </motion.div>
+             </div>
+          </section>
+
+          {/* Section 4: Itinerary Scroll */}
+          <section className="py-32 px-8 bg-background">
+            <div className="max-w-2xl mx-auto relative min-h-[1200px] flex flex-col">
+              <img src={scrollImg} alt="" className="absolute inset-0 w-full h-full object-fill z-0" />
+              
+              <div className="relative z-10 px-12 md:px-24 py-32 text-center">
+                <h2 className="font-cinzel text-4xl text-primary font-bold mb-2">Outline of</h2>
+                <h2 className="font-cinzel text-4xl text-primary font-bold mb-16 underline decoration-gold/20 underline-offset-8">the ceremony</h2>
+
+                {EVENTS.map((day, di) => (
+                  <div key={di} className="mb-20 last:mb-0">
+                    <div className="bg-primary/5 border border-primary/10 inline-block py-3 px-10 mb-12">
+                      <p className="font-cinzel text-sm text-primary font-bold tracking-[4px]">{day.day}</p>
+                    </div>
+                    
+                    <div className="space-y-12 text-left">
+                      {day.items.map((item) => (
+                        <div key={item.id} className="flex gap-6 relative">
+                          <span className="font-cinzel text-xs text-primary/20 mt-1">{item.id}.</span>
+                          <div className="flex-1">
+                            <p className="font-cinzel text-lg text-primary font-bold mb-1 leading-tight">
+                              {item.name}
+                            </p>
+                            <div className="flex justify-between items-center text-[11px] font-garamond italic text-primary/50 border-b border-primary/5 pb-2">
+                               <span>Time: {item.time}</span>
+                               <span className="text-secondary">{item.desc}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                
+                <div className="mt-24 space-y-6">
+                   <p className="font-garamond text-2xl text-primary italic">I request you to attend and bless me</p>
+                   <div className="flex justify-center py-4">
+                     <span className="text-4xl">🙏</span>
+                   </div>
+                   <div className="w-16 h-px bg-primary/20 mx-auto" />
+                   <div className="pt-4">
+                     <p className="font-garamond text-sm italic text-secondary mb-1">Best wishes from</p>
+                     <p className="font-cinzel text-lg text-primary font-bold tracking-[3px]">Mulik and Kulkarni family</p>
+                   </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 5: Venue (Burgundy) */}
+          <section className="py-32 px-8 bg-primary text-center relative overflow-hidden">
+            <div className="absolute inset-0 opacity-5 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/pinstripe-dark.png')]" />
+            
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              className="max-w-xl mx-auto"
             >
-              <p className="font-cinzel text-gold-light text-xs tracking-[5px] uppercase mb-3 opacity-60">SAVE THE DATE</p>
-              <h2 className="text-4xl font-cinzel text-white mb-6">27 June 2026</h2>
-              <div className="w-32 h-px bg-gradient-to-r from-transparent via-gold-light/40 to-transparent mx-auto mb-16" />
+              <p className="font-cinzel text-gold-light/40 text-xs tracking-[8px] uppercase mb-16">Wedding Venue</p>
               
-              <ScratchToReveal onReveal={() => {
-                setIsRevealed(true);
-                confetti({
-                  particleCount: 150,
-                  spread: 70,
-                  origin: { y: 0.6 },
-                  colors: ['#D4AF37', '#fed65b', '#610000']
-                });
-              }}>
-                <div className="flex flex-col items-center">
-                  <motion.p 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={isRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                    className="font-garamond italic text-gold-light text-3xl mb-10"
-                  >
-                    27th June 2026
-                  </motion.p>
-                  <Countdown isVisible={isRevealed} />
-                </div>
-              </ScratchToReveal>
-            </motion.div>
-          </section>
-
-          {/* Wardrobe Section */}
-          <section id="wardrobe" className="py-24 px-8 bg-background">
-            <div className="max-w-5xl mx-auto">
-              <div className="text-center mb-20">
-                <p className="font-cinzel text-primary text-xs tracking-[5px] uppercase mb-3 opacity-60">Dress Code</p>
-                <h2 className="text-4xl font-cinzel text-primary mb-6">Ceremonial Wardrobe</h2>
-                <div className="w-32 h-px bg-gold/20 mx-auto" />
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
-                {WARDROBE.map((item, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className="bg-white/50 border-none rounded-xl p-8 text-center royal-shadow hover:translate-y-[-8px] transition-all duration-500"
-                  >
-                    <span className="text-5xl mb-6 block">{item.icon}</span>
-                    <h3 className="font-cinzel text-base text-primary font-bold mb-3">{item.event}</h3>
-                    <p className="font-garamond text-sm text-on-surface/60 italic leading-relaxed">{item.desc}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Events Section */}
-          <section id="events" className="py-24 px-8 bg-white/30">
-            <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-20">
-                <p className="font-cinzel text-primary text-xs tracking-[5px] uppercase mb-3 opacity-60">Schedule</p>
-                <h2 className="text-4xl font-cinzel text-primary mb-6">The Royal Itinerary</h2>
-                <div className="w-32 h-px bg-gold/20 mx-auto" />
-              </div>
-
-              {EVENTS.map((day, di) => (
-                <div key={di} className="mb-20 last:mb-0">
-                  <div className="bg-primary flex flex-col md:flex-row justify-between items-center px-8 py-5 rounded-xl mb-10 royal-shadow">
-                    <h3 className="font-cinzel text-xl text-white tracking-widest">{day.day}</h3>
-                    <span className="font-garamond text-white/70 italic text-sm">{day.date}</span>
-                  </div>
-                  <div className="space-y-6">
-                    {day.items.map((item, ii) => (
-                      <motion.div
-                        key={ii}
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: ii * 0.05 }}
-                        className="flex gap-6 items-start p-6 bg-white/40 rounded-xl royal-shadow hover:bg-white/60 transition-colors group"
-                      >
-                        <div className="font-cinzel text-xs text-secondary font-bold min-w-[80px] pt-1">{item.time}</div>
-                        <div className="w-2.5 h-2.5 rounded-full bg-gold-light border-2 border-primary mt-1.5 shrink-0 group-hover:scale-125 transition-transform" />
-                        <div>
-                          <h4 className="font-cinzel text-base text-primary font-bold mb-1">{item.name}</h4>
-                          <p className="font-garamond text-sm text-on-surface/60 italic">{item.desc}</p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Venue Section */}
-          <section id="venue" className="py-24 px-8 bg-background">
-            <div className="max-w-3xl mx-auto text-center">
-              <p className="font-cinzel text-primary text-xs tracking-[5px] uppercase mb-3 opacity-60">विवाह स्थळ</p>
-              <h2 className="text-4xl font-cinzel text-primary mb-6">The Sacred Venue</h2>
-              <div className="w-32 h-px bg-gold/20 mx-auto mb-16" />
-
-              <div className="bg-white/60 rounded-2xl p-0 relative overflow-hidden royal-shadow">
-                <div className="absolute top-0 right-0 w-56 h-56 rounded-full bg-gold/5 blur-3xl animate-pulse" />
-                <div className="w-full h-[400px] overflow-hidden grayscale-[30%] hover:grayscale-0 transition-all duration-700">
-                  <img src={templeImg} alt="Alandi Temple" className="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-1000" />
-                </div>
-                <div className="p-12">
-                  <h3 className="font-devanagari text-4xl text-primary font-bold mb-3">अवधूत बँक्वेट हॉल</h3>
-                  <p className="font-garamond text-2xl text-secondary italic mb-6">Avadhoot Banquet Hall</p>
-                  <p className="font-devanagari text-xl text-on-surface/70 italic leading-relaxed mb-10">
-                    देवाची आळंदी, पुणे
-                  </p>
+              <div className="space-y-6 mb-20 bg-black/20 p-16 rounded-[40px] border border-gold-light/10 burgundy-shadow">
+                <h3 className="font-devanagari text-6xl text-gold-light font-bold mb-2">अवधूत बँक्वेट हॉल</h3>
+                <h3 className="font-cinzel text-3xl text-white font-bold opacity-90">Avadhoot Banquet Hall</h3>
+                <div className="w-12 h-px bg-gold-light/20 mx-auto my-8" />
+                <p className="font-garamond text-2xl text-gold-light/70 italic">God's Alandi, Pune</p>
+                
+                <div className="pt-16">
                   <a
                     href="https://maps.google.com/?q=Avadhoot+Banquet+Hall,Alandi,Pune"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-3 bg-primary text-white px-10 py-4 rounded-full font-cinzel text-xs tracking-[3px] hover:bg-primary/90 transition-all hover:scale-105 royal-shadow"
+                    className="inline-flex items-center gap-4 bg-white text-primary px-14 py-6 rounded-sm font-cinzel text-xs tracking-[4px] hover:bg-gold-light transition-all shadow-2xl"
                   >
-                    <MapPin className="w-4 h-4" /> Open In Google Maps
+                    <MapPin className="w-4 h-4" /> Open In Maps
                   </a>
                 </div>
               </div>
-            </div>
+
+              <div className="flex justify-center gap-16 opacity-30 mt-32">
+                 <img src={logoImg} className="w-16 h-16 object-contain invert" alt="" />
+                 <img src={logoImg} className="w-16 h-16 object-contain invert" alt="" />
+              </div>
+            </motion.div>
           </section>
 
-          {/* RSVP Section */}
-          <section id="rsvp" className="py-32 px-8 bg-primary text-center relative overflow-hidden">
-            <div className="absolute inset-0 opacity-[0.03]" 
-              style={{ backgroundImage: 'repeating-linear-gradient(45deg, #FFD700 0, #FFD700 1px, transparent 1px, transparent 50px)' }} />
-
-            <div className="relative z-10 max-w-2xl mx-auto">
-              <p className="font-cinzel text-gold-light text-xs tracking-[6px] uppercase mb-4 opacity-70">Presence & Blessings</p>
-              <h2 className="text-4xl font-devanagari text-white mb-6">आपली उपस्थिती व शुभाशिर्वाद लाभावेत ही विनंती</h2>
-              <div className="text-5xl mb-10 text-gold-light opacity-60">🙌</div>
-              <div className="w-24 h-px bg-gold-light/20 mx-auto mb-12" />
-
-              <div className="space-y-4 mb-16">
-                <p className="font-devanagari text-2xl text-gold-light tracking-widest font-bold">शुभेच्छुक</p>
-                <p className="font-devanagari text-3xl text-white tracking-widest leading-loose">
-                  मुळीक व कुलकर्णी परिवार 💐
-                </p>
-              </div>
-
-              <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-                <a
-                  href="https://wa.me/80927302812?text=Hi%21%20Confirming%20my%20attendance%20for%20Anuja%20%26%20Aditya%27s%20wedding%20%F0%9F%8C%B8"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full md:w-auto inline-flex items-center justify-center gap-3 bg-[#25D366] text-white px-10 py-5 rounded-full font-cinzel text-sm tracking-[2px] shadow-2xl hover:scale-105 transition-all"
-                >
-                  <MessageCircle className="w-5 h-5" /> Confirm On WhatsApp
-                </a>
-              </div>
-            </div>
-          </section>
-
-          <footer className="bg-primary/95 py-16 text-center border-t border-gold-light/10">
-            <div className="font-cinzel text-2xl text-white mb-3 tracking-widest">
-              ANUJA <Heart className="inline w-5 h-5 text-gold-light mx-2 fill-gold-light" /> ADITYA
-            </div>
-            <div className="font-devanagari text-gold-light text-xl mb-6 tracking-[10px]">॥ शुभ विवाह ॥</div>
-            <div className="text-[10px] text-white/30 tracking-[6px] uppercase font-cinzel">26 – 27 JUNE 2026 · ALANDI, PUNE</div>
+          <footer className="bg-primary py-20 text-center border-t border-white/5">
+            <div className="text-[10px] text-white/20 tracking-[12px] uppercase font-cinzel">26 – 27 JUNE 2026 • ALANDI • PUNE</div>
           </footer>
         </motion.div>
       )}

@@ -19,17 +19,13 @@
   --color-gold-light: #fed65b;
   --color-maroon: #610000;
   --color-maroon-light: #8b0000;
-  --color-cream: #fefccf;
-  --color-surface-variant: #fefccf;
+  --color-cream: #FDF8E1;
+  --color-surface-variant: #F9F1D6;
 }
 
 @layer base {
   body {
     @apply bg-background text-on-surface font-garamond overflow-x-hidden;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-cinzel;
   }
 }
 
@@ -49,11 +45,34 @@
   100% { transform: translateY(-80px) rotate(540deg); opacity: 0; }
 }
 
-/* Custom Utilities for Opulence */
-.glass-panel {
-  @apply bg-surface-variant/70 backdrop-blur-[20px] border-none;
+.scroll-container {
+  background-size: 100% 100%;
+  padding-left: 15%;
+  padding-right: 15%;
+  padding-top: 10%;
+  padding-bottom: 10%;
+}
+
+.burgundy-shadow {
+  box-shadow: 0 20px 50px -10px rgba(97, 0, 0, 0.3);
 }
 
 .royal-shadow {
   box-shadow: 0 40px 40px -20px rgba(29, 29, 3, 0.04);
+}
+
+.shloka-glow {
+  text-shadow: 0 0 20px rgba(254, 214, 91, 0.3);
+}
+
+.premium-card {
+  @apply bg-cream/50 backdrop-blur-md relative;
+  box-shadow: 
+    0 20px 40px -10px rgba(115, 92, 0, 0.1),
+    inset 0 0 0 1px rgba(212, 175, 55, 0.2);
+}
+
+.gold-texture {
+  background: linear-gradient(135deg, #D4AF37 0%, #F9F1D6 50%, #D4AF37 100%);
+  background-size: 200% 200%;
 }
