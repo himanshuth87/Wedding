@@ -275,10 +275,12 @@ export default function App() {
             className="fixed inset-0 z-50 flex flex-col items-center justify-center cursor-pointer overflow-hidden bg-primary"
             onClick={handleOpen}
           >
-            {/* Decorative Background Pattern */}
-            <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
-              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 0 L100 50 L50 100 L0 50 Z' fill='none' stroke='%23D4AF37' stroke-width='0.5'/%3E%3C/svg%3E")` }}
-            />
+            {/* Premium Door Image Background */}
+            <div className="absolute inset-0 z-0">
+              <img src={doorsImg} alt="Palace Doors" className="w-full h-full object-cover opacity-60" />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-primary/80" />
+              <div className="absolute inset-0 bg-black/30" />
+            </div>
 
             <motion.p
               animate={{ opacity: [0.7, 1, 0.7] }}
