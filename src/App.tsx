@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Music, MapPin, Calendar, Clock, Heart, MessageCircle, Mic, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Music, MapPin, Calendar, Clock, Heart, MessageCircle, Mic, ChevronRight, ChevronLeft, ArrowDown } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import HTMLFlipBook from 'react-pageflip';
 
 // --- Assets ---
 import logoImg from './assets/logo.png';
@@ -44,21 +43,16 @@ const EVENTS = [
 
 // --- Sub-Components ---
 
-const Page = forwardRef<HTMLDivElement, { children: React.ReactNode; number: number }>(
-  (props, ref) => {
-    return (
-      <div className="page" ref={ref}>
-        <div className="page-content h-full w-full bg-cream border-l border-gold/10 relative shadow-inner overflow-hidden">
-          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
-               style={{ backgroundImage: 'radial-gradient(circle, #D4AF37 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-          {props.children}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[10px] text-primary/20 font-cinzel tracking-widest">
-            — {props.number} —
-          </div>
-        </div>
-      </div>
-    );
-  }
+const Section = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <motion.section
+    initial={{ opacity: 0, y: 50 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-100px" }}
+    transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+    className={`min-h-screen w-full relative flex items-center justify-center overflow-hidden ${className}`}
+  >
+    {children}
+  </motion.section>
 );
 
 const ScratchToReveal = ({ children, onReveal }: { children: React.ReactNode, onReveal?: () => void }) => {
@@ -108,9 +102,9 @@ const ScratchToReveal = ({ children, onReveal }: { children: React.ReactNode, on
   };
 
   useEffect(() => {
-    // Small timeout to let FlipBook render the page first
-    const timer = setTimeout(initCanvas, 500);
-    return () => clearTimeout(timer);
+    initCanvas();
+    window.addEventListener('resize', initCanvas);
+    return () => window.removeEventListener('resize', initCanvas);
   }, []);
 
   const scratch = (e: any) => {
@@ -208,22 +202,43 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-primary flex items-center justify-center overflow-hidden">
+    <div className="min-h-screen bg-primary selection:bg-gold-light selection:text-primary scroll-smooth">
       <audio ref={audioRef} loop src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9b5c1d.mp3" />
 
+      {/* Fixed UI Elements */}
+      {showBook && (
+        <>
+          <button 
+            onClick={toggleMusic} 
+            className="fixed top-8 right-8 z-[100] p-4 bg-gold-light/10 rounded-full text-primary backdrop-blur-md border border-gold-light/20 shadow-xl hover:scale-110 transition-all cursor-pointer"
+          >
+            {isPlaying ? <Music className="animate-pulse" /> : <Music className="opacity-40" />}
+          </button>
+          
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 text-primary/40 flex flex-col items-center gap-2 pointer-events-none"
+          >
+            <span className="font-cinzel text-[10px] tracking-[5px] uppercase">Scroll to explore</span>
+            <ArrowDown className="w-4 h-4 animate-bounce" />
+          </motion.div>
+        </>
+      )}
+
+      {/* 3D Intro Doors */}
       <AnimatePresence>
         {!showBook && (
           <motion.div
             exit={{ scale: 1.1, opacity: 0 }}
             transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="fixed inset-0 z-50 flex cursor-pointer perspective-1000 origin-center"
+            className="fixed inset-0 z-[200] flex cursor-pointer perspective-1000 origin-center bg-primary"
             onClick={handleOpen}
           >
-            {/* Background Revealed Under Doors (Burgundy Ganpati) */}
-            <div className="absolute inset-0 bg-primary flex flex-col items-center justify-center p-10 z-0 text-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-10 z-0 text-center">
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
-                animate={isOpened ? { opacity: 0.1, scale: 1 } : { opacity: 0 }}
+                animate={isOpened ? { opacity: 0.2, scale: 1 } : { opacity: 0 }}
                 className="absolute inset-0"
               >
                 <img src={ganpatiImg} alt="" className="w-full h-full object-contain p-20 opacity-30" />
@@ -238,7 +253,6 @@ export default function App() {
               </motion.div>
             </div>
 
-            {/* Doors Opening Animation (3D Swing) */}
             <motion.div 
               animate={isOpened ? { rotateY: -110, x: '-20%' } : { rotateY: 0, x: 0 }} 
               transition={{ duration: 2, ease: [0.4, 0, 0.2, 1] }} 
@@ -257,153 +271,159 @@ export default function App() {
               <div className="absolute inset-0 bg-black/10 shadow-[inset_20px_0_40px_rgba(0,0,0,0.5)]" />
             </motion.div>
 
-            <motion.p animate={{ opacity: isOpened ? 0 : [0.3, 0.7, 0.3] }} transition={{ duration: 2, repeat: Infinity }} className="absolute bottom-20 left-0 right-0 text-center text-gold-light font-cinzel tracking-[10px] z-20">TAP TO OPEN</motion.p>
+            <motion.p animate={{ opacity: isOpened ? 0 : [0.3, 0.7, 0.3] }} transition={{ duration: 2, repeat: Infinity }} className="absolute bottom-20 left-0 right-0 text-center text-gold-light font-cinzel tracking-[10px] z-20 uppercase">Tap to open miracle</motion.p>
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* Main Website Sections */}
       {showBook && (
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="book-container w-full max-w-4xl px-4">
-          <div className="flex justify-between items-center mb-6 absolute top-6 left-6 right-6 z-50">
-            <button onClick={() => bookRef.current.pageFlip().flipPrev()} className="p-2 bg-white/10 rounded-full text-gold-light hover:bg-white/20 transition-all"><ChevronLeft /></button>
-            <button onClick={toggleMusic} className="p-4 bg-gold-light/10 rounded-full text-primary backdrop-blur-md border border-gold-light/20 shadow-xl hover:scale-110 transition-all">
-              {isPlaying ? <Music className="animate-pulse" /> : <Music className="opacity-40" />}
-            </button>
-            <button onClick={() => bookRef.current.pageFlip().flipNext()} className="p-2 bg-white/10 rounded-full text-gold-light hover:bg-white/20 transition-all"><ChevronRight /></button>
-          </div>
+        <div className="w-full bg-cream">
+          {/* 1. Floral Intro */}
+          <Section className="bg-cream">
+            <img src={floralGanpatiImg} alt="Floral Reveal" className="absolute inset-0 w-full h-full object-cover opacity-90" />
+          </Section>
 
-          <HTMLFlipBook
-            width={400}
-            height={600}
-            size="stretch"
-            minWidth={300}
-            maxWidth={1000}
-            minHeight={450}
-            maxHeight={1533}
-            maxShadowOpacity={0.5}
-            showCover={true}
-            className="royal-shadow rounded-lg overflow-hidden"
-            ref={bookRef}
-          >
-            {/* Page 1: Floral Reveal (Premium Entrance) */}
-            <Page number={1}>
-               <div className="h-full w-full relative overflow-hidden bg-cream">
-                 <img src={floralGanpatiImg} alt="Floral Entrance" className="absolute inset-0 w-full h-full object-cover opacity-90" />
-                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 mt-10">
-                    {/* The image itself might have content, let's keep text minimal if it's already there */}
+          {/* 2. Formal Invitation */}
+          <Section className="bg-cream px-8">
+            <div className="max-w-3xl text-center space-y-12">
+               <img src={logoImg} className="w-32 mx-auto mb-10 drop-shadow-xl" alt="" />
+               <p className="text-secondary font-cinzel tracking-[12px] uppercase text-xs mb-8">Affectionately Invited</p>
+               <h1 className="text-primary font-garamond text-5xl italic leading-relaxed">
+                 We request the pleasure of your company on the auspicious occasion of the marriage ceremony of
+               </h1>
+               <div className="pt-10 flex flex-col md:flex-row items-center justify-center gap-8">
+                  <h2 className="text-primary font-cinzel text-6xl font-bold tracking-[8px]">ANUJA</h2>
+                  <p className="text-gold-light font-cinzel text-3xl tracking-[15px]">&</p>
+                  <h2 className="text-primary font-cinzel text-6xl font-bold tracking-[8px]">ADITYA</h2>
+               </div>
+            </div>
+          </Section>
+
+          {/* 3. Scratch to Reveal */}
+          <Section className="bg-white/50 px-8">
+             <div className="text-center">
+               <p className="text-secondary font-cinzel tracking-[8px] uppercase text-[10px] mb-12">Something Special</p>
+               <ScratchToReveal onReveal={() => {
+                  confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#D4AF37', '#610000', '#F5E6BE']
+                  });
+               }}>
+                 <div className="text-center p-10">
+                   <p className="text-gold-light font-cinzel text-xl mb-4 tracking-widest uppercase">JUNE</p>
+                   <p className="text-primary font-cinzel text-8xl font-bold">27</p>
+                   <p className="text-gold-light font-cinzel text-xl mt-4 tracking-widest uppercase font-bold">2026</p>
+                 </div>
+               </ScratchToReveal>
+               <p className="mt-12 text-primary font-devanagari text-2xl tracking-[5px]">शनिवार, आळंदी</p>
+             </div>
+          </Section>
+
+          {/* 4. Alandi Temple & Countdown */}
+          <Section className="bg-primary text-white p-12">
+             <div className="absolute inset-0 opacity-10">
+               <img src={templeImg} className="w-full h-full object-cover grayscale invert" alt="" />
+             </div>
+             <div className="relative z-10 text-center scale-125">
+                <p className="text-gold-light/40 font-cinzel tracking-[8px] uppercase text-[10px] mb-8">Alandi Temple</p>
+                <h3 className="text-gold-light font-devanagari text-4xl mb-12">विवाह मांडव</h3>
+                <Countdown />
+                <p className="mt-12 text-white/20 font-cinzel text-[8px] tracking-[10px] uppercase">#A_Squared_LoveStory</p>
+             </div>
+          </Section>
+
+          {/* 5. Journey / Timeline */}
+          <Section className="min-h-fit py-32 px-8">
+             <div className="max-w-4xl mx-auto w-full">
+               <h3 className="text-primary font-cinzel text-5xl mb-24 text-center tracking-[15px] uppercase">The Journey</h3>
+               
+               <div className="grid md:grid-cols-2 gap-16">
+                 {/* Day 1 */}
+                 <div className="space-y-12">
+                    <div className="border-b-2 border-gold/20 pb-4">
+                      <h4 className="text-gold-light font-cinzel text-xl font-bold tracking-[5px] uppercase">Day 01</h4>
+                      <p className="text-secondary italic font-garamond">Friday, 26th June</p>
+                    </div>
+                    {EVENTS[0].items.map(item => (
+                      <div key={item.id} className="group cursor-default">
+                        <p className="text-gold-light font-cinzel text-[10px] tracking-[3px] mb-2">{item.time}</p>
+                        <h5 className="text-primary font-cinzel text-2xl font-bold tracking-widest group-hover:text-gold-light transition-colors">{item.name}</h5>
+                        <p className="text-secondary italic font-garamond text-sm">{item.desc}</p>
+                      </div>
+                    ))}
+                 </div>
+
+                 {/* Day 2 */}
+                 <div className="space-y-12">
+                    <div className="border-b-2 border-gold/20 pb-4">
+                      <h4 className="text-gold-light font-cinzel text-xl font-bold tracking-[5px] uppercase">Day 02</h4>
+                      <p className="text-secondary italic font-garamond">Saturday, 27th June</p>
+                    </div>
+                    {EVENTS[1].items.map(item => (
+                      <div key={item.id} className="group cursor-default">
+                        <p className="text-gold-light font-cinzel text-[10px] tracking-[3px] mb-2">{item.time}</p>
+                        <h5 className="text-primary font-cinzel text-2xl font-bold tracking-widest group-hover:text-gold-light transition-colors">{item.name}</h5>
+                        <p className="text-secondary italic font-garamond text-sm">{item.desc}</p>
+                      </div>
+                    ))}
                  </div>
                </div>
-            </Page>
+             </div>
+          </Section>
 
-            {/* Page 2: Affectionately Invited */}
-            <Page number={2}>
-              <div className="p-8 h-full flex flex-col justify-center border-2 border-double border-gold/10 m-2">
-                <p className="text-primary/60 italic font-garamond text-xl mb-6">Affectionately invited</p>
-                <img src={logoImg} className="w-32 mx-auto mb-8" alt="" />
-                <h1 className="text-primary font-devanagari text-4xl font-bold mb-4">अनुजा आणि आदित्य</h1>
-                <p className="text-secondary italic font-garamond text-lg">Happy wedding ceremony</p>
-              </div>
-            </Page>
-
-            {/* Page 3: Save the Date */}
-            <Page number={3}>
-              <div className="p-8 h-full flex flex-col items-center justify-center">
-                <p className="text-primary/40 font-cinzel text-[10px] tracking-[6px] mb-8 uppercase">Save The Date</p>
-                <ScratchToReveal onReveal={() => confetti()}>
-                   <div className="text-center">
-                     <p className="text-primary font-cinzel text-4xl font-bold">27 JUNE 2026</p>
-                   </div>
-                </ScratchToReveal>
-                <p className="mt-10 text-primary/60 font-devanagari">शनिवार, आळंदी</p>
-              </div>
-            </Page>
-
-            {/* Page 4: Temple & Countdown */}
-            <Page number={4}>
-              <div className="p-8 h-full flex flex-col items-center justify-center">
-                <img src={templeImg} className="w-full rounded mb-10 royal-shadow grayscale hover:grayscale-0 transition-all duration-700" alt="" />
-                <Countdown />
-                <p className="mt-8 text-primary/40 font-devanagari text-xs opacity-50">#A_Squared_LoveStory</p>
-              </div>
-            </Page>
-
-            {/* Page 5: Day 1 Ceremony */}
-            <Page number={5}>
-              <div className="p-8 h-full text-center">
-                <div className="bg-primary/5 py-2 mb-8 border-y border-primary/10"><h3 className="text-primary font-cinzel font-bold">{EVENTS[0].day}</h3></div>
-                <div className="space-y-6 text-left">
-                  {EVENTS[0].items.map(item => (
-                    <div key={item.id} className="border-b border-gold/5 pb-2">
-                      <p className="text-primary font-cinzel text-sm font-bold">{item.name}</p>
-                      <div className="flex justify-between text-[10px] text-primary/40 italic"><span>{item.time}</span><span>{item.desc}</span></div>
-                    </div>
-                  ))}
+          {/* 6. Family Blessings */}
+          <Section className="bg-cream/30 border-t border-gold/10">
+             <div className="text-center p-12">
+                <p className="text-primary italic font-garamond text-4xl mb-12">We request you to attend and bless the couple</p>
+                <div className="text-8xl mb-12">🙏</div>
+                <div className="w-32 h-px bg-gold/20 mx-auto mb-10" />
+                <div className="space-y-4">
+                  <p className="text-secondary font-garamond italic text-xl uppercase tracking-[2px]">With best compliments from</p>
+                  <p className="text-primary font-cinzel font-bold text-4xl tracking-[10px]">Mulik & Kulkarni Family</p>
                 </div>
-              </div>
-            </Page>
+             </div>
+          </Section>
 
-            {/* Page 6: Day 2 Ceremony */}
-            <Page number={6}>
-              <div className="p-8 h-full text-center">
-                <div className="bg-primary/5 py-2 mb-8 border-y border-primary/10"><h3 className="text-primary font-cinzel font-bold">{EVENTS[1].day}</h3></div>
-                <div className="space-y-4 text-left">
-                  {EVENTS[1].items.map(item => (
-                    <div key={item.id} className="border-b border-gold/5 pb-2">
-                      <p className="text-primary font-cinzel text-xs font-bold">{item.name}</p>
-                      <div className="flex justify-between text-[9px] text-primary/40 italic"><span>{item.time}</span><span>{item.desc}</span></div>
-                    </div>
-                  ))}
-                </div>
+          {/* 7. Venue Finale */}
+          <Section className="bg-primary min-h-screen">
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/pinstripe-dark.png')]" />
+            <div className="text-center p-12 scale-110">
+              <p className="text-secondary font-garamond italic text-3xl mb-12">Wedding venue</p>
+              <div className="mb-16">
+                 <h3 className="text-gold-light font-cinzel text-7xl md:text-8xl font-bold mb-4 tracking-tight">Avadhoot</h3>
+                 <h3 className="text-gold-light font-cinzel text-7xl md:text-8xl font-bold mb-8 tracking-tight">Banquet Hall</h3>
+                 <p className="text-white/60 font-garamond italic text-3xl">God's Alandi, Pune</p>
               </div>
-            </Page>
 
-            {/* Page 7: Request & Family */}
-            <Page number={7}>
-              <div className="p-10 h-full flex flex-col items-center justify-center text-center">
-                <p className="text-primary italic font-garamond text-2xl mb-10">I request you to attend and bless me</p>
-                <div className="text-4xl mb-10">🙏</div>
-                <div className="w-16 h-px bg-gold/30 mb-8" />
-                <div className="space-y-2">
-                  <p className="text-secondary font-garamond italic text-sm">Best wishes from</p>
-                  <p className="text-primary font-cinzel font-bold text-xl tracking-[4px]">Mulik & Kulkarni</p>
-                  <p className="text-primary font-cinzel font-bold text-xl tracking-[4px]">family</p>
-                </div>
+              <div className="mb-24">
+                <a 
+                  href="https://maps.google.com/?q=Avadhoot+Banquet+Hall,Alandi,Pune" 
+                  target="_blank" 
+                  className="inline-flex items-center gap-6 bg-gradient-to-b from-[#6D4C41] to-[#3E2723] px-14 py-8 rounded-full border border-white/20 shadow-2xl hover:scale-110 transition-all group"
+                >
+                  <div className="bg-[#4285F4] p-2 rounded-sm shadow-inner">
+                     <MapPin className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-white font-cinzel text-xl tracking-widest font-bold border-l border-white/20 pl-8 group-hover:text-gold-light uppercase">Open in Maps</span>
+                </a>
               </div>
-            </Page>
-            <Page number={8}>
-              <div className="bg-primary h-full flex flex-col items-center justify-center p-10 text-center relative overflow-hidden">
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/pinstripe-dark.png')]" />
-                
-                <p className="text-secondary font-garamond italic text-xl mb-6">Wedding venue</p>
-                
-                <div className="mb-10">
-                   <h3 className="text-gold-light font-cinzel text-5xl font-bold mb-3 tracking-tight">Avadhoot</h3>
-                   <h3 className="text-gold-light font-cinzel text-5xl font-bold mb-3 tracking-tight">Banquet Hall</h3>
-                   <p className="text-white/60 font-garamond italic text-xl">God's Alandi, Pune</p>
-                </div>
 
-                <div className="mb-20">
-                  <a 
-                    href="https://maps.google.com/?q=Avadhoot+Banquet+Hall,Alandi,Pune" 
-                    target="_blank" 
-                    className="inline-flex items-center gap-4 bg-gradient-to-b from-[#6D4C41] to-[#3E2723] px-10 py-5 rounded-full border border-white/20 shadow-2xl hover:scale-105 transition-all group"
-                  >
-                    <div className="bg-[#4285F4] p-1.5 rounded-sm">
-                       <MapPin className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="text-white font-cinzel text-sm tracking-widest font-bold border-l border-white/20 pl-4 group-hover:text-gold-light">Open in Maps</span>
-                  </a>
-                </div>
-
-                <div className="flex justify-center gap-10 mt-10">
-                   <img src={logoImg} className="w-20 object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]" alt="" />
-                   <img src={logoImg} className="w-20 object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]" alt="" />
-                </div>
+              <div className="flex justify-center gap-16 mt-16 scale-150">
+                 <img src={logoImg} className="w-24 object-contain drop-shadow-[0_0_25px_rgba(212,175,55,0.4)]" alt="" />
+                 <img src={logoImg} className="w-24 object-contain drop-shadow-[0_0_25px_rgba(212,175,55,0.4)]" alt="" />
               </div>
-            </Page>
-          </HTMLFlipBook>
-        </motion.div>
+            </div>
+            
+            <p className="absolute bottom-10 left-0 right-0 text-center text-white/10 font-cinzel text-[8px] tracking-[15px] uppercase">Crafted with love for Anuja & Aditya</p>
+          </Section>
+        </div>
       )}
+    </div>
+  );
+}
     </div>
   );
 }
