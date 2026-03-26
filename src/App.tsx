@@ -11,6 +11,7 @@ import goldFoilImg from './assets/gold_foil.png';
 import doorsImg from './assets/ceremony_doors.png';
 import ganpatiImg from './assets/ganpati.png';
 import scrollImg from './assets/scroll.png';
+import floralGanpatiImg from './assets/floral_ganpati.png';
 
 // --- Constants & Data ---
 
@@ -62,36 +63,54 @@ const Page = forwardRef<HTMLDivElement, { children: React.ReactNode; number: num
 
 const ScratchToReveal = ({ children, onReveal }: { children: React.ReactNode, onReveal?: () => void }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isRevealed, setIsRevealed] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
 
-  useEffect(() => {
+  const initCanvas = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const img = new Image();
-    img.src = goldFoilImg;
-    img.onload = () => {
-      const resize = () => {
-        const rect = canvas.parentElement?.getBoundingClientRect();
-        if (rect) {
-          canvas.width = rect.width;
-          canvas.height = rect.height;
-          const pattern = ctx.createPattern(img, 'repeat');
-          if (pattern) {
-            ctx.fillStyle = pattern;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-          }
-          ctx.font = '600 16px Cinzel';
-          ctx.fillStyle = '#610000';
-          ctx.textAlign = 'center';
-          ctx.fillText('Scratch To Reveal', canvas.width / 2, canvas.height / 2);
-        }
-      };
-      resize();
-    };
+    const { width, height } = container.getBoundingClientRect();
+    canvas.width = width;
+    canvas.height = height;
+
+    // Draw Premium Gold Foil Effect
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, '#BF953F');
+    gradient.addColorStop(0.2, '#FCF6BA');
+    gradient.addColorStop(0.4, '#B38728');
+    gradient.addColorStop(0.7, '#FBF5B7');
+    gradient.addColorStop(1, '#AA771C');
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // Add some "gold grain" texture
+    for (let i = 0; i < 1000; i++) {
+      ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.1})`;
+      ctx.fillRect(Math.random() * width, Math.random() * height, 1, 1);
+    }
+
+    ctx.font = '600 18px Cinzel';
+    ctx.fillStyle = '#610000';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('SCRATCH HERE', width / 2, height / 2);
+    
+    // Aesthetic border on foil
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(5, 5, width - 10, height - 10);
+  };
+
+  useEffect(() => {
+    // Small timeout to let FlipBook render the page first
+    const timer = setTimeout(initCanvas, 500);
+    return () => clearTimeout(timer);
   }, []);
 
   const scratch = (e: any) => {
@@ -100,23 +119,31 @@ const ScratchToReveal = ({ children, onReveal }: { children: React.ReactNode, on
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
     const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || e.touches[0].clientX) - rect.left;
-    const y = (e.clientY || e.touches[0].clientY) - rect.top;
+    const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+    const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+    
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath();
-    ctx.arc(x, y, 25, 0, Math.PI * 2);
+    ctx.arc(x, y, 30, 0, Math.PI * 2);
     ctx.fill();
+
+    // Check progress
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const transparent = imageData.data.filter((_, i) => i % 4 === 3 && _ < 128).length;
-    if ((transparent / (imageData.data.length / 4)) > 0.4) {
+    const pixels = imageData.data;
+    let transparent = 0;
+    for (let i = 3; i < pixels.length; i += 4) {
+      if (pixels[i] < 128) transparent++;
+    }
+    
+    if (transparent / (pixels.length / 4) > 0.5) {
       setIsRevealed(true);
       if (onReveal) onReveal();
     }
   };
 
   return (
-    <div className="relative w-full aspect-square max-w-[280px] mx-auto overflow-hidden rounded-lg shadow-xl">
-      <div className={`w-full h-full flex items-center justify-center transition-opacity duration-1000 ${isRevealed ? 'opacity-100' : 'opacity-0'}`}>
+    <div ref={containerRef} className="relative w-full aspect-square max-w-[300px] mx-auto overflow-hidden rounded-lg shadow-2xl border-4 border-gold/20 m-4">
+      <div className={`w-full h-full flex items-center justify-center bg-white transform transition-all duration-1000 ${isRevealed ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
         {children}
       </div>
       {!isRevealed && (
@@ -187,33 +214,62 @@ export default function App() {
       <AnimatePresence>
         {!showBook && (
           <motion.div
-            exit={{ scale: 1.2, opacity: 0 }}
-            transition={{ duration: 1.5 }}
-            className="fixed inset-0 z-50 flex cursor-pointer"
+            exit={{ scale: 1.1, opacity: 0 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="fixed inset-0 z-50 flex cursor-pointer perspective-1000 origin-center"
             onClick={handleOpen}
           >
-            <motion.div animate={isOpened ? { x: '-100%' } : { x: 0 }} transition={{ duration: 2, ease: "easeInOut" }} className="w-1/2 h-full z-10">
-              <img src={doorsImg} className="w-full h-full object-cover object-left" alt="" />
-            </motion.div>
-            <motion.div animate={isOpened ? { x: '100%' } : { x: 0 }} transition={{ duration: 2, ease: "easeInOut" }} className="w-1/2 h-full z-10">
-              <img src={doorsImg} className="w-full h-full object-cover object-right" alt="" />
-            </motion.div>
-            <div className="absolute inset-0 flex items-center justify-center bg-primary">
-              <motion.img animate={{ opacity: [0.2, 0.5, 0.2] }} transition={{ duration: 2, repeat: Infinity }} src={ganpatiImg} className="w-64 opacity-20 blur-sm" />
-              <p className="absolute bottom-20 text-gold-light font-cinzel tracking-[10px] animate-pulse">TAP TO OPEN</p>
+            {/* Background Revealed Under Doors (Burgundy Ganpati) */}
+            <div className="absolute inset-0 bg-primary flex flex-col items-center justify-center p-10 z-0 text-center">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={isOpened ? { opacity: 0.1, scale: 1 } : { opacity: 0 }}
+                className="absolute inset-0"
+              >
+                <img src={ganpatiImg} alt="" className="w-full h-full object-contain p-20 opacity-30" />
+              </motion.div>
+              <motion.div
+                 initial={{ opacity: 0 }}
+                 animate={isOpened ? { opacity: 1 } : { opacity: 0 }}
+                 className="relative z-10 text-gold-light space-y-6"
+              >
+                <div className="border border-gold-light/20 px-8 py-3 mx-auto max-w-fit font-devanagari text-xl">॥ श्री गणेशाय नमः ॥</div>
+                <p className="font-devanagari text-2xl tracking-widest leading-loose">वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ ।<br/>निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥</p>
+              </motion.div>
             </div>
+
+            {/* Doors Opening Animation (3D Swing) */}
+            <motion.div 
+              animate={isOpened ? { rotateY: -110, x: '-20%' } : { rotateY: 0, x: 0 }} 
+              transition={{ duration: 2, ease: [0.4, 0, 0.2, 1] }} 
+              className="w-1/2 h-full z-10 origin-left preserve-3d relative"
+            >
+              <img src={doorsImg} className="w-full h-full object-cover object-left" alt="" />
+              <div className="absolute inset-0 bg-black/10 shadow-[inset_-20px_0_40px_rgba(0,0,0,0.5)]" />
+            </motion.div>
+
+            <motion.div 
+              animate={isOpened ? { rotateY: 110, x: '20%' } : { rotateY: 0, x: 0 }} 
+              transition={{ duration: 2, ease: [0.4, 0, 0.2, 1] }} 
+              className="w-1/2 h-full z-10 origin-right preserve-3d relative"
+            >
+              <img src={doorsImg} className="w-full h-full object-cover object-right" alt="" />
+              <div className="absolute inset-0 bg-black/10 shadow-[inset_20px_0_40px_rgba(0,0,0,0.5)]" />
+            </motion.div>
+
+            <motion.p animate={{ opacity: isOpened ? 0 : [0.3, 0.7, 0.3] }} transition={{ duration: 2, repeat: Infinity }} className="absolute bottom-20 left-0 right-0 text-center text-gold-light font-cinzel tracking-[10px] z-20">TAP TO OPEN</motion.p>
           </motion.div>
         )}
       </AnimatePresence>
 
       {showBook && (
-        <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="book-container w-full max-w-4xl px-4">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="book-container w-full max-w-4xl px-4">
           <div className="flex justify-between items-center mb-6 absolute top-6 left-6 right-6 z-50">
-            <button onClick={() => bookRef.current.pageFlip().flipPrev()} className="p-2 bg-white/10 rounded-full text-gold-light"><ChevronLeft /></button>
-            <button onClick={toggleMusic} className="p-4 bg-gold-light/10 rounded-full text-gold-light backdrop-blur-md border border-gold-light/20">
+            <button onClick={() => bookRef.current.pageFlip().flipPrev()} className="p-2 bg-white/10 rounded-full text-gold-light hover:bg-white/20 transition-all"><ChevronLeft /></button>
+            <button onClick={toggleMusic} className="p-4 bg-gold-light/10 rounded-full text-primary backdrop-blur-md border border-gold-light/20 shadow-xl hover:scale-110 transition-all">
               {isPlaying ? <Music className="animate-pulse" /> : <Music className="opacity-40" />}
             </button>
-            <button onClick={() => bookRef.current.pageFlip().flipNext()} className="p-2 bg-white/10 rounded-full text-gold-light"><ChevronRight /></button>
+            <button onClick={() => bookRef.current.pageFlip().flipNext()} className="p-2 bg-white/10 rounded-full text-gold-light hover:bg-white/20 transition-all"><ChevronRight /></button>
           </div>
 
           <HTMLFlipBook
@@ -229,12 +285,13 @@ export default function App() {
             className="royal-shadow rounded-lg overflow-hidden"
             ref={bookRef}
           >
-            {/* Page 1: Cover (Ganpati) */}
+            {/* Page 1: Floral Reveal (Premium Entrance) */}
             <Page number={1}>
-               <div className="bg-primary absolute inset-0 p-8 flex flex-col items-center justify-center text-center">
-                 <div className="border border-gold-light/30 px-6 py-2 mb-8"><p className="text-gold-light font-devanagari text-sm">॥ श्री गणेशाय नमः ॥</p></div>
-                 <img src={ganpatiImg} className="w-40 mb-10 drop-shadow-2xl" alt="" />
-                 <h2 className="text-gold-light font-devanagari text-xl leading-relaxed">वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ ।<br/>निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥</h2>
+               <div className="h-full w-full relative overflow-hidden bg-cream">
+                 <img src={floralGanpatiImg} alt="Floral Entrance" className="absolute inset-0 w-full h-full object-cover opacity-90" />
+                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 mt-10">
+                    {/* The image itself might have content, let's keep text minimal if it's already there */}
+                 </div>
                </div>
             </Page>
 
