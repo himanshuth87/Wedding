@@ -76,3 +76,32 @@
   background: linear-gradient(135deg, #D4AF37 0%, #F9F1D6 50%, #D4AF37 100%);
   background-size: 200% 200%;
 }
+
+/* Flipbook Styles */
+.page-container {
+  @apply bg-cream shadow-2xl overflow-hidden relative border-l border-gold/10;
+}
+
+.page-content {
+  @apply h-full w-full p-8 flex flex-col items-center justify-center text-center relative;
+  background: radial-gradient(circle at center, #FDF8E1 0%, #F9F1D6 100%);
+}
+
+.page-shadow {
+  box-shadow: inset 20px 0 30px -10px rgba(0,0,0,0.02);
+}
+
+.book-container {
+  @apply flex items-center justify-center p-4 md:p-10 min-h-[90vh];
+}
+
+/* Page flip transition shadows */
+.stf__parent {
+  perspective: 2000px;
+}
+.stf__block {
+  transform-style: preserve-3d;
+}
+:root {
+  --page-fold: rgba(0,0,0,0.05);
+}
