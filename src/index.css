@@ -20,6 +20,7 @@
   --color-maroon: #610000;
   --color-maroon-light: #8b0000;
   --color-cream: #fefccf;
+  --color-surface-variant: #fefccf;
 }
 
 @layer base {
