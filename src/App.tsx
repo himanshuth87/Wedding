@@ -357,29 +357,48 @@ export default function App() {
               </div>
             </Page>
 
-            {/* Page 7: Venue */}
+            {/* Page 7: Request & Family */}
             <Page number={7}>
-              <div className="bg-primary h-full flex flex-col items-center justify-center p-8 text-center text-white">
-                <p className="text-gold-light/40 text-[8px] tracking-[6px] uppercase mb-8">Wedding Venue</p>
-                <div className="p-6 border border-gold-light/20 rounded-2xl bg-black/10 w-full mb-8">
-                  <h3 className="text-gold-light font-devanagari text-2xl mb-2">अवधूत बँक्वेट हॉल</h3>
-                  <p className="text-white/60 font-garamond italic text-sm mb-6">God's Alandi, Pune</p>
-                  <a href="https://maps.google.com/?q=Avadhoot+Banquet+Hall,Alandi,Pune" target="_blank" className="bg-white text-primary px-6 py-3 rounded-full text-[10px] font-cinzel tracking-widest block">OPEN MAPS</a>
+              <div className="p-10 h-full flex flex-col items-center justify-center text-center">
+                <p className="text-primary italic font-garamond text-2xl mb-10">I request you to attend and bless me</p>
+                <div className="text-4xl mb-10">🙏</div>
+                <div className="w-16 h-px bg-gold/30 mb-8" />
+                <div className="space-y-2">
+                  <p className="text-secondary font-garamond italic text-sm">Best wishes from</p>
+                  <p className="text-primary font-cinzel font-bold text-xl tracking-[4px]">Mulik & Kulkarni</p>
+                  <p className="text-primary font-cinzel font-bold text-xl tracking-[4px]">family</p>
                 </div>
-                <img src={logoImg} className="w-12 opacity-20 invert" alt="" />
               </div>
             </Page>
-
-            {/* Page 8: Family */}
             <Page number={8}>
-              <div className="h-full flex flex-col items-center justify-center p-8 bg-[url('./assets/scroll.png')] bg-cover bg-center">
-                 <div className="bg-white/80 p-6 backdrop-blur-sm rounded-lg border border-gold/10 text-center">
-                    <p className="text-primary italic font-garamond text-xl mb-6">I request you to attend and bless me</p>
-                    <div className="text-2xl mb-6">🙏</div>
-                    <div className="w-10 h-px bg-primary/20 mx-auto mb-4" />
-                    <p className="text-secondary font-garamond italic text-xs mb-1">Best wishes from</p>
-                    <p className="text-primary font-cinzel font-bold text-sm tracking-widest">Mulik and Kulkarni family</p>
-                 </div>
+              <div className="bg-primary h-full flex flex-col items-center justify-center p-10 text-center relative overflow-hidden">
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/pinstripe-dark.png')]" />
+                
+                <p className="text-secondary font-garamond italic text-xl mb-6">Wedding venue</p>
+                
+                <div className="mb-10">
+                   <h3 className="text-gold-light font-cinzel text-5xl font-bold mb-3 tracking-tight">Avadhoot</h3>
+                   <h3 className="text-gold-light font-cinzel text-5xl font-bold mb-3 tracking-tight">Banquet Hall</h3>
+                   <p className="text-white/60 font-garamond italic text-xl">God's Alandi, Pune</p>
+                </div>
+
+                <div className="mb-20">
+                  <a 
+                    href="https://maps.google.com/?q=Avadhoot+Banquet+Hall,Alandi,Pune" 
+                    target="_blank" 
+                    className="inline-flex items-center gap-4 bg-gradient-to-b from-[#6D4C41] to-[#3E2723] px-10 py-5 rounded-full border border-white/20 shadow-2xl hover:scale-105 transition-all group"
+                  >
+                    <div className="bg-[#4285F4] p-1.5 rounded-sm">
+                       <MapPin className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-white font-cinzel text-sm tracking-widest font-bold border-l border-white/20 pl-4 group-hover:text-gold-light">Open in Maps</span>
+                  </a>
+                </div>
+
+                <div className="flex justify-center gap-10 mt-10">
+                   <img src={logoImg} className="w-20 object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]" alt="" />
+                   <img src={logoImg} className="w-20 object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]" alt="" />
+                </div>
               </div>
             </Page>
           </HTMLFlipBook>
