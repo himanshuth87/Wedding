@@ -8,6 +8,12 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Music, MapPin, Calendar, Clock, Heart, MessageCircle, Mic } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
+// --- Assets ---
+import logoImg from './assets/logo.png';
+import templeImg from './assets/temple.jpg';
+import goldFoilImg from './assets/gold_foil.png';
+import doorsImg from './assets/palace_doors.png';
+
 // --- Constants & Data ---
 
 const WEDDING_DATE = new Date('2026-06-27T12:30:00');
@@ -61,25 +67,37 @@ const ScratchToReveal = ({ children, onReveal }: { children: React.ReactNode, on
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const resize = () => {
-      const rect = canvas.parentElement?.getBoundingClientRect();
-      if (rect) {
-        canvas.width = rect.width;
-        canvas.height = rect.height;
-        // Refill after resize
-        ctx.fillStyle = '#D4AF37'; // Royal Gold for the scratch surface
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.font = '600 20px Cinzel';
-        ctx.fillStyle = '#610000';
-        ctx.textAlign = 'center';
-        ctx.fillText('Scratch To Reveal', canvas.width / 2, canvas.height / 2);
-      }
-    };
+    const img = new Image();
+    img.src = goldFoilImg;
+    img.onload = () => {
+      const resize = () => {
+        const rect = canvas.parentElement?.getBoundingClientRect();
+        if (rect) {
+          canvas.width = rect.width;
+          canvas.height = rect.height;
+          
+          // Draw texture
+          const pattern = ctx.createPattern(img, 'repeat');
+          if (pattern) {
+            ctx.fillStyle = pattern;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          } else {
+            ctx.fillStyle = '#D4AF37';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
+          
+          // Text Overlay
+          ctx.font = '600 24px Cinzel';
+          ctx.fillStyle = '#610000';
+          ctx.textAlign = 'center';
+          ctx.fillText('Scratch To Reveal', canvas.width / 2, canvas.height / 2);
+        }
+      };
 
-    resize();
-    window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+      resize();
+      window.addEventListener('resize', resize);
+      return () => window.removeEventListener('resize', resize);
+    };
   }, []);
 
   const getPos = (e: React.MouseEvent | React.TouchEvent) => {
@@ -378,13 +396,14 @@ export default function App() {
             >
               <p className="font-devanagari text-primary text-2xl font-semibold mb-6 tracking-widest opacity-80">सस्नेह आमंत्रण</p>
 
-              <div className="my-8 flex justify-center">
-                <div className="relative w-40 h-40 flex items-center justify-center">
-                  <div className="absolute inset-0 border-[0.5px] border-gold/30 rounded-full animate-spin-slow" />
-                  <div className="text-primary font-cinzel text-6xl font-bold flex items-center justify-center">
-                    अ<span className="text-secondary tracking-tighter ml-[-8px]">A</span>
-                  </div>
-                </div>
+              <div className="my-10 flex justify-center">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="relative w-64 h-64 flex items-center justify-center"
+                >
+                  <img src={logoImg} alt="Anuja & Aditya Monogram" className="w-full h-full object-contain drop-shadow-2xl" />
+                </motion.div>
               </div>
 
               <motion.div
@@ -510,25 +529,26 @@ export default function App() {
               <h2 className="text-4xl font-cinzel text-primary mb-6">The Sacred Venue</h2>
               <div className="w-32 h-px bg-gold/20 mx-auto mb-16" />
 
-              <div className="bg-white/60 rounded-2xl p-12 relative overflow-hidden royal-shadow">
-                <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-gold/5 blur-3xl animate-pulse" />
-                <div className="text-6xl mb-8">🏛️</div>
-                <h3 className="font-devanagari text-4xl text-primary font-bold mb-3">अवधूत बँक्वेट हॉल</h3>
-                <p className="font-garamond text-2xl text-secondary italic mb-6">Avadhoot Banquet Hall</p>
-                <p className="font-devanagari text-xl text-on-surface/70 italic leading-relaxed mb-10">
-                  देवाची आळंदी, पुणे
-                </p>
-                <div className="mb-12 opacity-40">
-                  <div className="text-7xl">🛕</div>
+              <div className="bg-white/60 rounded-2xl p-0 relative overflow-hidden royal-shadow">
+                <div className="absolute top-0 right-0 w-56 h-56 rounded-full bg-gold/5 blur-3xl animate-pulse" />
+                <div className="w-full h-[400px] overflow-hidden grayscale-[30%] hover:grayscale-0 transition-all duration-700">
+                  <img src={templeImg} alt="Alandi Temple" className="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-1000" />
                 </div>
-                <a
-                  href="https://maps.google.com/?q=Avadhoot+Banquet+Hall,Alandi,Pune"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 bg-primary text-white px-10 py-4 rounded-full font-cinzel text-xs tracking-[3px] hover:bg-primary/90 transition-all hover:scale-105 royal-shadow"
-                >
-                  <MapPin className="w-4 h-4" /> Open In Google Maps
-                </a>
+                <div className="p-12">
+                  <h3 className="font-devanagari text-4xl text-primary font-bold mb-3">अवधूत बँक्वेट हॉल</h3>
+                  <p className="font-garamond text-2xl text-secondary italic mb-6">Avadhoot Banquet Hall</p>
+                  <p className="font-devanagari text-xl text-on-surface/70 italic leading-relaxed mb-10">
+                    देवाची आळंदी, पुणे
+                  </p>
+                  <a
+                    href="https://maps.google.com/?q=Avadhoot+Banquet+Hall,Alandi,Pune"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-3 bg-primary text-white px-10 py-4 rounded-full font-cinzel text-xs tracking-[3px] hover:bg-primary/90 transition-all hover:scale-105 royal-shadow"
+                  >
+                    <MapPin className="w-4 h-4" /> Open In Google Maps
+                  </a>
+                </div>
               </div>
             </div>
           </section>
